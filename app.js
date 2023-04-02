@@ -12,18 +12,25 @@ app.get('/', (req, res) => {
 // User login request
 app.post('/login', async (req, res) => {
   try {
-    const isUserExist = await User.find({email: req.body.email});
+    const {email, password} = req.body;
+    const token = Math.floor(Math.random() * (1000000 - 100000) + 100000);
+    const isUserExist = await User.find({email});
     if (isUserExist) {
       if (isUserExist.password === req.body.password) {
+        isUserExist.token = token;
+        await isUserExist.save();
         res
           .status(200)
-          .send({message: 'User login successful', user: isUserExist});
+          .send({message: 'User login successful', data: isUserExist});
       } else {
         res.status(400).send({message: 'Wrong password entered'});
       }
     } else {
-      const response = await User(req.body).save();
-      res.status(200).send({message:'User signup and login successful'})
+      const user = {email, password, token};
+      const response = await User(user).save();
+      res
+        .status(200)
+        .send({message: 'User signup and login successful', data: response});
     }
   } catch (error) {
     res.status(400).send({message: error.message, error});
@@ -31,7 +38,22 @@ app.post('/login', async (req, res) => {
 });
 
 // User logout request
-
+app.post('/logout/:userid', async (req, res) => {
+  try {
+    const {userid} = req.params;
+    const {token} = req.body;
+    const user = await User.findOne({_id: userid, token});
+    if (user) {
+      user.token = '';
+      await user.save();
+      res.status(200).send({message: 'Logout successful'});
+    } else {
+      res.status(498).send({message: 'Invalid token'});
+    }
+  } catch (error) {
+    res.status(404).send({message: error.message, error});
+  }
+});
 
 app.listen(8080, () => {
   console.log('App is runnig on http://localhost:8080');
