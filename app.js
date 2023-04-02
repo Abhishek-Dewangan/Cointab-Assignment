@@ -1,9 +1,13 @@
 const express = require('express');
+const cors = require('cors');
 const connection = require('./Database/Connection');
 const User = require('./Models/User');
 
 const app = express();
 connection();
+
+app.use(express.json());
+app.use(cors());
 
 app.get('/', (req, res) => {
   res.send('Welcome to the Software Developer Assignment');
