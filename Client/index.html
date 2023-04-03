@@ -32,6 +32,12 @@
     const form = document.getElementById("form");
 
     form.addEventListener("submit", async (e) => {
+      // const d1 = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
+      // const d2 = new Date().getTime();
+      // const d3 = new Date("new Date().getTime() - 24 * 60 * 60 * 1000").getTime();
+      // console.log("yesterday - ", d1);
+      // console.log("today - ", d2);
+      // console.log("tomorrow - ", d3);
       e.preventDefault();
       const user = {
         email: e.target.email.value,
