@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+
+  <body>
+    <h1 id="email">Home page</h1>
+    <button id="logout">Logout</button>
+  </body>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script type="module">
+    const user = JSON.parse(localStorage.getItem("user")) || {};
+    const email = document.getElementById("email");
+    const logout = document.getElementById("logout");
+    email.innerText = user.email;
+    logout.addEventListener("click", async () => {
+      const response = await axios.post(
+        `http://localhost:8080/logout/${user._id}`,
+        { token: user.token }
+      );
+      console.log(response);
+      if (response.status === 200) {
+        localStorage.removeItem("user");
+        alert(response.data.message);
+        window.location.replace("./index.html");
+      }
+    });
+  </script>
+</html>
