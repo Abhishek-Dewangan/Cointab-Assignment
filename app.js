@@ -38,7 +38,12 @@ app.post("/login", async (req, res) => {
       // Checking the wrong password attemp count
       if (isUserExist.wrong_login_attemps > 4) {
         res.status(400).send({
-          message: `You have reached your maximum login failed attemps, you can login after ${isUserExist.block_date.toLocaleDateString()}, ${isUserExist.block_date.toLocaleTimeString()}`,
+          message: `You have reached your maximum login failed attemps, you can login after ${isUserExist.block_date.toLocaleDateString(
+            undefined,
+            { timeZone: "Asia/Kolkata" }
+          )}, ${isUserExist.block_date.toLocaleTimeString(undefined, {
+            timeZone: "Asia/Kolkata",
+          })}`,
         });
       }
 
@@ -56,7 +61,6 @@ app.post("/login", async (req, res) => {
       // If password doesn't match
       else {
         isUserExist.block_date = new Date(new Date().getTime() + 86400000);
-        await isUserExist.save();
         isUserExist.wrong_login_attemps += 1;
         await isUserExist.save();
         res.status(400).send({

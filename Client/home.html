@@ -28,7 +28,7 @@
     email.innerText = user.email;
     logout.addEventListener("click", async () => {
       const response = await axios.post(
-        `http://localhost:8080/logout/${user._id}`,
+        `https://tricky-shirt-mite.cyclic.app/logout/${user._id}`,
         { token: user.token }
       );
       if (response.status === 200) {

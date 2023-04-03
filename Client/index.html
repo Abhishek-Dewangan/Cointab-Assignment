@@ -32,13 +32,14 @@
     const form = document.getElementById("form");
 
     form.addEventListener("submit", async (e) => {
+      console.log(new Date());
       e.preventDefault();
       const user = {
         email: e.target.email.value,
         password: e.target.password.value,
       };
       await axios
-        .post("http://localhost:8080/login", user)
+        .post("https://tricky-shirt-mite.cyclic.app/login", user)
         .then((res) => {
           localStorage.setItem("user", JSON.stringify(res.data.data));
           alert(res.data.message);
