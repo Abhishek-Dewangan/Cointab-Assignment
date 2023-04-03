@@ -8,7 +8,31 @@
   </head>
 
   <body>
-    <h1>Home page</h1>
+    <form id="form">
+      <input type="email" name="email" placeholder="Email" />
+      <input type="password" name="password" placeholder="Password" />
+      <input type="submit" value="Login" />
+    </form>
   </body>
-  <script type="text/javascript"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script type="module">
+    const form = document.getElementById("form");
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const user = {
+        email: e.target.email.value,
+        password: e.target.password.value,
+      };
+      const response = await axios.post("http://localhost:8080/login", user);
+      console.log(response);
+
+      if (response.status === 200) {
+        localStorage.setItem("user", JSON.stringify(response.data.data));
+        alert(response.data.message);
+        window.location.replace("./home.html");
+      } else {
+        alert("response.response.data.message");
+      }
+    });
+  </script>
 </html>
