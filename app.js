@@ -21,13 +21,20 @@ app.post("/login", async (req, res) => {
     const isUserExist = await User.findOne({ email });
     // console.log(isUserExist);
     if (isUserExist) {
-      if (isUserExist.password === password) {
+      if (isUserExist.wrong_login_attemps === 5) {
+        res.status(400).send({
+          message:
+            "You have reached your maximum login failed attemps try after 24 hours",
+        });
+      } else if (isUserExist.password === password) {
         isUserExist.token = token;
         await isUserExist.save();
         res
           .status(200)
           .send({ message: "User login successful", data: isUserExist });
       } else {
+        isUserExist.wrong_login_attemps += 1;
+        await isUserExist.save();
         res.status(400).send({ message: "Wrong password entered" });
       }
     } else {
