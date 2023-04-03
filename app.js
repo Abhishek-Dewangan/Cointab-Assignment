@@ -1,9 +1,11 @@
 const express = require("express");
 const cors = require("cors");
+require("dotenv").config();
 const connection = require("./Database/Connection");
 const User = require("./Models/User");
 
 const app = express();
+const port = process.env.PORT || 8080;
 connection();
 
 app.use(express.json());
@@ -19,8 +21,10 @@ app.post("/login", async (req, res) => {
     const { email, password } = req.body;
     const token = Math.floor(Math.random() * (1000000 - 100000) + 100000);
     const isUserExist = await User.findOne({ email });
-    // console.log(isUserExist);
+
+    // If user exist
     if (isUserExist) {
+      // Checking the block date with current date
       if (isUserExist.block_date) {
         const date = new Date().getTime();
         const blockDate = isUserExist.block_date.getTime();
@@ -30,15 +34,16 @@ app.post("/login", async (req, res) => {
           await isUserExist.save();
         }
       }
+
+      // Checking the wrong password attemp count
       if (isUserExist.wrong_login_attemps > 4) {
-        // if (!isUserExist.block_date) {
-        //   isUserExist.block_date = new Date(new Date().getTime() + 86400000);
-        //   await isUserExist.save();
-        // }
         res.status(400).send({
           message: `You have reached your maximum login failed attemps, you can login after ${isUserExist.block_date.toLocaleDateString()}, ${isUserExist.block_date.toLocaleTimeString()}`,
         });
-      } else if (isUserExist.password === password) {
+      }
+
+      // Matching the password
+      else if (isUserExist.password === password) {
         isUserExist.token = token;
         isUserExist.block_date = "";
         isUserExist.wrong_login_attemps = 0;
@@ -46,7 +51,10 @@ app.post("/login", async (req, res) => {
         res
           .status(200)
           .send({ message: "User login successful", data: isUserExist });
-      } else {
+      }
+
+      // If password doesn't match
+      else {
         isUserExist.block_date = new Date(new Date().getTime() + 86400000);
         await isUserExist.save();
         isUserExist.wrong_login_attemps += 1;
@@ -57,7 +65,10 @@ app.post("/login", async (req, res) => {
           } attemps left`,
         });
       }
-    } else {
+    }
+
+    // If user does not existing then registering the user
+    else {
       const user = { email, password, token };
       const response = await User(user).save();
       res
@@ -65,7 +76,6 @@ app.post("/login", async (req, res) => {
         .send({ message: "User signup and login successful", data: response });
     }
   } catch (error) {
-    console.log("error");
     res.status(400).send({ message: error.message, error });
   }
 });
@@ -88,6 +98,7 @@ app.post("/logout/:userid", async (req, res) => {
   }
 });
 
-app.listen(8080, () => {
+//
+app.listen(port, () => {
   console.log("App is runnig on http://localhost:8080");
 });
