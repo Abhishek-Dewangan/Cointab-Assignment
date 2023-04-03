@@ -19,7 +19,7 @@ app.post("/login", async (req, res) => {
     const { email, password } = req.body;
     const token = Math.floor(Math.random() * (1000000 - 100000) + 100000);
     const isUserExist = await User.findOne({ email });
-    console.log(isUserExist);
+    // console.log(isUserExist);
     if (isUserExist) {
       if (isUserExist.password === password) {
         isUserExist.token = token;
@@ -28,7 +28,6 @@ app.post("/login", async (req, res) => {
           .status(200)
           .send({ message: "User login successful", data: isUserExist });
       } else {
-        console.log("wong");
         res.status(400).send({ message: "Wrong password entered" });
       }
     } else {

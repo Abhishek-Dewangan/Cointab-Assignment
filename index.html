@@ -17,22 +17,21 @@
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <script type="module">
     const form = document.getElementById("form");
+
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const user = {
         email: e.target.email.value,
         password: e.target.password.value,
       };
-      const response = await axios.post("http://localhost:8080/login", user);
-      console.log(response);
-
-      if (response.status === 200) {
-        localStorage.setItem("user", JSON.stringify(response.data.data));
-        alert(response.data.message);
-        window.location.replace("./home.html");
-      } else {
-        alert("response.response.data.message");
-      }
+      await axios
+        .post("http://localhost:8080/login", user)
+        .then((res) => {
+          localStorage.setItem("user", JSON.stringify(res.data.data));
+          alert(res.data.message);
+          window.location.replace("./home.html");
+        })
+        .catch((error) => alert(error.response.data.message));
     });
   </script>
 </html>
